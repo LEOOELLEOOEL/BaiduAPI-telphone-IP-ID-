@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title> 
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <style type="text/css">
+    	
+    	body{
+	   background:#DDDDDD;  
+      }
+    h2{
+    	margin-top:-20%;
+    	margin-left: 8%;
+
+      }
+.input_div{
+    	width: 100%;
+    	height: 20px;
+    	 margin-top:30% ;
+    	}
+.queryBtn{
+	margin-top:0px;
+	margin-left: 37%;
+	margin-bottom:-220%;
+	width: 115px;
+	height: 40px;
+	z-index: 2;
+}
+table{
+	display: none;
+	font-size: 20px;
+	font-family: "黑体";
+	position: absolute;
+	margin-top: 10%;
+	margin-left: 13%;
+    border: 1px solid #245269 ;
+}
+.input_num{
+	 margin-top: 40px;
+}
+td{
+	border: 1px solid #444444;
+    padding: 5px;
+    align-content:center ;
+}
+#query_tip{
+      margin-left:32% ;
+	  color: #FF0000;
+}
+#query_button{
+	float: left;
+	position: absolute;
+}
+#ID_queryBtn{
+	margin-left:69% ;
+	margin-top: 14%;
+}
+#location_queryBtn{
+	margin-left: 0%;
+	margin-top: 25%;
+}
+#IP_queryBtn{
+margin-left: 1%;
+margin-top: 25%;
+}
+    </style>
+</head>
+<body>
+<div class="input_div page-header">
+	  <h2>百度API手机归属地查询</h1>
+   <div class="input_num" >
+      <div class="input-group" id="inputNum" >
+           <span class="input-group-addon ">手机号码</span>
+           <input type="text" id="phoneNum" type="text" class="form-control" placeholder="请输入..." />
+      </div>  
+      <div id="query_button">
+          <button id="location_queryBtn"  type="button"class="btn btn-default btn-lg active queryBtn">归属地查询</button>
+          <button id="IP_queryBtn"  type="button"class="btn btn-default btn-lg active queryBtn">IP地址查询</button> 
+          <button id="ID_queryBtn"  type="button"class="btn btn-default btn-lg active queryBtn">身份证查询</button> 
+      
+       </div>
+   </div>   
+          <div id="query_tip" class="query_result alert " colspan="0"></div>
+	   <table id="query_result_table" class="table table-bordered table-hover table-condensed">
+        <tr>
+         
+        </tr>
+        <tr>
+            <td id="phone_num_text" class="query_result"></td>
+            <td id="phone_num" class="query_result"></td>
+        </tr>
+        <tr>
+            <td id="seven_num_text" class="query_result"></td>
+            <td id="seven_num" class="query_result"></td>
+        </tr>
+        <tr>
+            <td id="supplier_text" class="query_result"></td>
+            <td id="supplier" class="query_result"></td>
+        </tr>
+        <tr>
+            <td id="province_text" class="query_result"></td>
+            <td id="province" class="query_result"></td>
+        </tr>
+        <tr>
+            <td id="city_text" class="query_result"></td>
+            <td id="city" class="query_result"></td>
+        </tr>
+        <tr>
+            <td id="suit_ext" class="query_result"></td>
+            <td id="suit" class="query_result"></td>
+        </tr>
+        </table>
+</div>  
+ <script src="js/mui.min.js"></script>
+<script type="text/javascript" src="jquery-2.2.3.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript">
+     $(document).ready(function () {
+        $("#location_queryBtn").click(function () {
+          var phoneNum = $("#phoneNum").val();
+          $("h2").text("百度API手机归属地查询");
+          	$(".input-group-addon").text("手机号");
+            var reg =/^\d*$/;//验证手机号码为非负整数
+            if (reg.test(phoneNum)&&phoneNum.length==11) { 
+               $(".query_result").text("");
+             var header={"apikey":"c1ffa55bc5eb1c13b2984d6b5af652f0"};
+                url = "http://apis.baidu.com/apistore/mobilenumber/mobilenumber?phone="+phoneNum;
+                $.ajax(url, {
+                    method: "GET",
+                    dataType: "json",
+                     headers: header,
+                    success: function (phone_data) {
+                          if(phone_data.retData !="") {
+                          	  	$("table").css("font-size","18px")
+                          	$("table").css("display","block")
+                            $("#phone_num_text").text("手机号码：");
+                            $("#phone_num").text(phone_data.retData.phone);
+                            $("#seven_num_text").text("号码前七位：");
+                            $("#seven_num").text(phone_data.retData.prefix);
+                            $("#supplier_text").text("运营商：");
+                            $("#supplier").text(phone_data.retData.supplier);
+                            $("#province_text").text("省份：");
+                            $("#province").text(phone_data.retData.province);
+                            $("#city_text").text("城市：");
+                            $("#city").text(phone_data.retData.city);
+                            $("#suit_ext").text("卡号类型：");
+                            $("#suit").text(phone_data.retData.suit);
+                             $("#phoneNum").val("");
+                        } else
+                        {
+                         	$("table").css("display","none");
+                        	$(".query_result").text("");
+                            $("#query_tip").text("该手机号码不存在!");
+                        }
+                    }
+                });
+            } else if(phoneNum.length==0){
+            	 $("#query_tip").text("手机号码不能为空!");
+            } else if(reg.test(phoneNum)&&0<phoneNum.length<11)
+            {
+            	  $(".query_result").text("");
+            	$("#query_tip").text("手机号码应该为11位数字!");
+            }else if(reg.test(phoneNum)&&phoneNum.length>11){
+            	  $(".query_result").text("");
+            	$("#query_tip").text("手机号码应该为11位数字!");
+            }else{
+                $(".query_result").text("");
+                $("#query_tip").text("手机号码只能是11位数字!");
+            }
+        });
+         $("#ID_queryBtn").click(function () {
+         	$("h2").text("百度API身份证查询");
+         	$(".input-group-addon").text("身份证号");
+             var phoneNum = $("#phoneNum").val();
+            var reg =/^\d*$/;//验证身份证号码为非负整数
+            if (reg.test(phoneNum)&&phoneNum.length==18) { 
+               $(".query_result").text("");
+             var header={"apikey":"c1ffa55bc5eb1c13b2984d6b5af652f0"};
+                url = "http://apis.baidu.com/apistore/idservice/id?id="+phoneNum;
+                $.ajax(url, {
+                    method: "GET",
+                    dataType: "json",
+                     headers: header,
+                    success: function (phone_data) {
+                          if(phone_data.retData !="") {
+                          	$("table").css("display","block");
+                          	$("table").css("font-size","15px");
+                            $("#phone_num_text").text("性别：");
+                            $("#phone_num").text(phone_data.retData.sex+"[M-男,F-女,N-未知]");
+                            $("#seven_num_text").text("出生日期：");
+                            $("#seven_num").text(phone_data.retData.birthday);
+                            $("#supplier_text").text("身份证归属地：");
+                            $("#supplier").text(phone_data.retData.address);
+                            $("#province_text").text("");
+                            $("#province").text("");
+                            $("#city_text").text("");
+                            $("#city").text("");
+                            $("#suit_ext").text("");
+                            $("#suit").text("");
+                             $("#phoneNum").val("");
+                        } else
+                        {
+                         	$("table").css("display","none");
+                        	$(".query_result").text("");
+                            $("#query_tip").text("该身份证号不存在!");
+                        }
+                    }
+                });
+            } else if(phoneNum.length==0){
+            	 $("#query_tip").text("身份证号不能为空!");
+            } else if(reg.test(phoneNum)&&0<phoneNum.length<18)
+            {
+            	  $(".query_result").text("");
+            	$("#query_tip").text("身份证号应该为18位数字!");
+            }else if(reg.test(phoneNum)&&phoneNum.length>18){
+            	  $(".query_result").text("");
+            	$("#query_tip").text("身份证号应该为18位数字!");
+            }else{
+                $(".query_result").text("");
+                $("#query_tip").text("身份证号只能是18位数字!");
+            }
+        });
+         $("#IP_queryBtn").click(function () {     	
+         	$("h2").text("百度API—IP地址查询");
+         	$(".input-group-addon").text("IP地址");
+             var phoneNum = $("#phoneNum").val();
+               $(".query_result").text("");
+             var header={"apikey":"c1ffa55bc5eb1c13b2984d6b5af652f0"};
+                url = "http://apis.baidu.com/apistore/iplookup/iplookup_paid?ip="+phoneNum;
+                if(phoneNum.length!=0){
+                $.ajax(url, {
+                    method: "GET",
+                    dataType: "json",
+                     headers: header,
+                    success: function (phone_data) {
+                          if(phone_data.retData !="") {
+                          	$("table").css("display","block");
+                          	$("table").css("font-size","15px");
+                            $("#phone_num_text").text("IP地址：");
+                            $("#phone_num").text(phone_data.retData.ip);
+                            $("#seven_num_text").text("国家：");
+                            $("#seven_num").text(phone_data.retData.country);
+                            $("#supplier_text").text("省份：");
+                            $("#supplier").text(phone_data.retData.province);
+                            $("#province_text").text("城市：");
+                            $("#province").text(phone_data.retData.city);
+                            $("#city_text").text("地区：");
+                            $("#city").text(phone_data.retData.district);
+                            $("#suit_ext").text("运营商：");
+                            $("#suit").text(phone_data.retData.carrier); 
+                            $("#phoneNum").val("");
+                        } else
+                        {
+                         	$("table").css("display","none");
+                        	$(".query_result").text("");
+                            $("#query_tip").text("该IP地址不存在!");
+                        }
+                    }
+                });
+                }else if(phoneNum.length==0){
+            	 $("#query_tip").text("IP地址不能为空!");
+            }
+        });
+    });
+    </script>
+</body>
+</html>

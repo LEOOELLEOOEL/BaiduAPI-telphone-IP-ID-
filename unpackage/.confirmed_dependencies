@@ -1,0 +1,10 @@
+{
+  "index.html": {
+    "resources": [
+      "jquery-2.2.3.min.js",
+      "js/mui.min.js",
+      "js/bootstrap.min.js",
+      "css/bootstrap.min.css"
+    ]
+  }
+}
